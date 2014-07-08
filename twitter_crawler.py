@@ -43,19 +43,16 @@ class TwitterCrawlerAPI:
     #get method limit
     def getApiMethodLimit(self, apiLimit, methodName):
         resources = apiLimit['resources']
-
         try:
             user = resources['users'][methodName]
             return user['remaining']
         except KeyError, e:
             pass
-
         try:
             status = resources['statuses'][methodName]
             return status['remaining']
         except KeyError, e:
             pass
-
         try:
             application = resources['application'][methodName]
             return application['remaining']
@@ -65,7 +62,6 @@ class TwitterCrawlerAPI:
         return None
 
     #User Object
-
     #get user object
     def getUser(self, twitter_handle):
         #attributes = [attr for attr in dir(user) if not callable(getattr(user, method))]
@@ -179,10 +175,10 @@ class TwitterCrawlerAPI:
         return user.profile_use_background_image
 
     #Tweet Object
-
-    #get timeline
+    #get timeline: user tweets
     def getTimeline(self, twitter_handle, numOfTweet):
-        return self.api.user_timeline(screen_name = twitter_handle, count = numOfTweet)
+        statuses = self.api.user_timeline(screen_name = twitter_handle, count = numOfTweet)
+        return statuses
 
     #get author, which is an object of user
     def getStatusAuthor(self, status):
@@ -292,35 +288,27 @@ class TwitterCrawlerAPI:
 
     #get user tweets
     def getUserTweets(self, twitter_handle, tw_cnt):
-        statuses = self.getTimeline(twitter_handle, tw_cnt)
-        #print dir(statuses[0])
-        #status object methods
-        return statuses
-
-    #get user tweets texts for nlp purpose
-    def getTweetsTexts(self, statuses):
         tweets = []
+        statuses = self.getTimeline(twitter_handle, tw_cnt)
         for status in statuses:
-             tweets.append(self.getStatusText(status))
+            tweet = {}
+            tweet["source"] = self.getStatusSource(status)
+            tweet["text"] = self.getStatusText(status)
+            tweet["created_at"] = str(self.getStatusCreatedAt(status))
+            tweet["author"] = self.getStatusAuthor(status)
+            tweet["coordinate"] = self.getStatusCoordinates(status)
+            tweet["geo"] = self.getStatusGeo(status)
+            tweet["lang"] = self.getStatusLanguage(status)
+            tweet["fav_cnt"] = self.getStatusFavoriteCount(status)
+            tweet["rt_cnt"] = self.getStatusRetweetCount(status)
+            tweets.append(tweet)
         return tweets
 
-    #get sources of user tweets
-    def getTweetsSources(self, statuses):
-        sources = []
-        for status in statuses:
-            sources.append(self.getStatusSource(status))
-        return sources
-    
-    #get tweeting times for the user
-    def getTweetingTimes(self, statuses):
-        tweeting_times = []
-        for status in statuses:
-            tweeting_times.append(str(self.getStatusCreatedAt(status)))
-        return tweeting_times
-
-    def getApiLimit(self, user):
-        print self.getApiLimit()
-
+    #print tweets info
+    def printUserTweets(self, tweets):
+        for tweet in tweets:
+            print "author=%s, created_at=%s, text=%s, source=%s, coord=%s, geo=%s, lang=%s, fav_cnt=%d, rt_cnt=%d" % (tweet["author"], tweet["created_at"], tweet["text"], tweet["source"], tweet["coordinate"], tweet["geo"], tweet["lang"], tweet["fav_cnt"], tweet["rt_cnt"])
+            
 if __name__ == "__main__":
     if len(sys.argv) < 1:
         print 'Usage: ' + sys.argv[0]
@@ -330,8 +318,6 @@ if __name__ == "__main__":
     tw_handle = "kjahanbakhsh"
     profile = twitter.getUserProfile(tw_handle)
     twitter.printUserProfile(profile)
-    tw_cnt = 2
-    statuses = twitter.getUserTweets(tw_handle, 2)
-    print twitter.getTweetsTexts(statuses)
-    print twitter.getTweetingTimes(statuses)
-    print twitter.getTweetsSources(statuses)
+    tw_cnt = 3
+    tweets = twitter.getUserTweets(tw_handle, tw_cnt)
+    twitter.printUserTweets(tweets)
