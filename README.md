@@ -1,16 +1,13 @@
-Twitter Crawler
-=============
+<h1>Twitter Crawler</h1>
+<h2>General Description:</h2>
+<p>This is a python script to crawl account properties and tweets for a given twitter handle.</p>
+<h2>Dependencies:</h2>
+Twitter crawler uses <a href="https://github.com/tweepy/tweepy">tweepy library</a>. 
 
-General description: this is a python script to crawl account properties and tweets for a given twitter handle.
-
-Author: Kazem Jahanbakhsh
-
-Dependencies:
-
-Twitter crawler uses tweepy library:
-https://github.com/tweepy/tweepy
-
-How to run twitter crawler: first, create a twitter app and copy your app secret key and access token into twitter.conf .
-Then, you can run crawler as: python twitter_crawler.py
-
+<h2>How to run twitter crawler:</h2>
+<p>First, create a twitter app and copy your app secret key and access token into "twitter.conf" file. Next, you can run crawler as follows:<br />
+python twitter_crawler.py
+</p>
+<p>
 If you have any question about the code, contact me @ kDOTjahanbakhshATgmailDOTcom
+</p>
