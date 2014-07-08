@@ -5,7 +5,12 @@
 Twitter crawler uses <a href="https://github.com/tweepy/tweepy">tweepy library</a>. 
 
 <h2>How to run twitter crawler:</h2>
-<p>First, create a twitter app and copy your app secret key and access token into "twitter.conf" file. Next, you can run crawler as follows:<br />
+<p>First, create a twitter app and copy your app secret key and access token into a file under the same directory "twitter.conf" file. See below for the format of "twitter.conf" file:<br /><br />
+consumer_key = "your_consumer_key"<br />
+consumer_secret = "your_consumer_secret"<br />
+access_token = "your_access_token"<br />
+access_token_secret = "your_access_token_secret"<br /><br />
+Next, you can run twitter crawler as follows:<br />
 <b>python twitter_crawler.py</b>
 </p>
 <p>
