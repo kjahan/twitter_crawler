@@ -291,8 +291,8 @@ class TwitterCrawlerAPI:
         print "status count=%d" % profile["status_count"]
 
     #get user tweets
-    def getUserTweets(self, twitter_handle):
-        statuses = self.getTimeline(twitter_handle, 200)
+    def getUserTweets(self, twitter_handle, tw_cnt):
+        statuses = self.getTimeline(twitter_handle, tw_cnt)
         #print dir(statuses[0])
         #status object methods
         return statuses
@@ -301,24 +301,21 @@ class TwitterCrawlerAPI:
     def getTweetsTexts(self, statuses):
         tweets = []
         for status in statuses:
-        #    print status.__getstate__()
-             tweets.append(status.text)
-        #    tweeting_times.append(str(status.created_at))
-            #print status.source
+             tweets.append(self.getStatusText(status))
         return tweets
 
     #get sources of user tweets
     def getTweetsSources(self, statuses):
         sources = []
         for status in statuses:
-            sources.append(status.source)
+            sources.append(self.getStatusSource(status))
         return sources
     
     #get tweeting times for the user
     def getTweetingTimes(self, statuses):
         tweeting_times = []
         for status in statuses:
-            tweeting_times.append(str(status.created_at))
+            tweeting_times.append(str(self.getStatusCreatedAt(status)))
         return tweeting_times
 
     def getApiLimit(self, user):
@@ -333,5 +330,8 @@ if __name__ == "__main__":
     tw_handle = "kjahanbakhsh"
     profile = twitter.getUserProfile(tw_handle)
     twitter.printUserProfile(profile)
-    statuses = twitter.getUserTweets(tw_handle)
+    tw_cnt = 2
+    statuses = twitter.getUserTweets(tw_handle, 2)
+    print twitter.getTweetsTexts(statuses)
+    print twitter.getTweetingTimes(statuses)
     print twitter.getTweetsSources(statuses)
