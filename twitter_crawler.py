@@ -17,8 +17,7 @@ consumer_secret = config["consumer_secret"]
 
 #
 # The access tokens can be found on your applications's Details
-# page located at https://dev.twitter.com/apps (located
-# under "Your access token")
+# page located at https://dev.twitter.com/apps (located under "Your access token")
 access_token = config["access_token"]
 access_token_secret = config["access_token_secret"]
 
