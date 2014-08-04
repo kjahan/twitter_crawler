@@ -20,7 +20,7 @@ Next, you can run twitter crawler as follows:
 	python twitter_crawler.py
 
 <p>
-If you have any question about the code, contact me @ kDOTjahanbakhshATgmailDOTcom
+If you have any question about this project or you want to report a bug, please contact me @ kDOTjahanbakhshATgmailDOTcom
 </p>
 
 ## Licence
