@@ -17,7 +17,7 @@ First, create a twitter app and copy your app secret key and access token into a
 
 Next, you can run twitter crawler as follows:
 
-	python twitter_crawler.py
+	python crawler.py
 
 <p>
 If you have any question about this project or you want to report a bug, please contact me @ kDOTjahanbakhshATgmailDOTcom
