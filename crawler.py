@@ -12,8 +12,8 @@ import sys
 config = {}
 execfile("twitter.conf", config)
 
-consumer_key = config["consumer_key"]
-consumer_secret = config["consumer_secret"]
+api_key = config["api_key"]
+api_secret_key = config["api_secret_key"]
 
 #
 # The access tokens can be found on your applications's Details
@@ -21,7 +21,7 @@ consumer_secret = config["consumer_secret"]
 access_token = config["access_token"]
 access_token_secret = config["access_token_secret"]
 
-auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+auth = tweepy.OAuthHandler(api_key, api_secret_key)
 auth.set_access_token(access_token, access_token_secret)
 
 api = tweepy.API(auth)
