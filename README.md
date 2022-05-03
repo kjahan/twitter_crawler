@@ -4,7 +4,7 @@ Twitter Crawler
 
 ## Dependencies
 
-Twitter crawler uses <a href="https://github.com/tweepy/tweepy">tweepy library</a>. 
+Twitter crawler uses <a href="https://github.com/tweepy/tweepy">tweepy</a> and wget libraries. 
 
 ## How to run twitter crawler
 
@@ -18,14 +18,11 @@ First, create a twitter app and copy your app secret key and access token into a
 
 The api keys can be found in the App details under Keys and tokens page located at https://dev.twitter.com/apps (under "OAuth settings")
 
-
 Next, you can run twitter crawler as follows:
 
-	python crawler.py
+	python crawler.py target_twitter_handle download_full_path
 
-<p>
-If you have any question about this project or you want to report a bug, please contact me @ kDOTjahanbakhshATgmailDOTcom
-</p>
+<p>Kudos to <a href="https://github.com/kjahan">kjahan</a> for the OAuth code part.</p>
 
 ## Licence
 
