@@ -1,6 +1,8 @@
 import tweepy
 import unittest
 import sys
+import os
+import wget
 
 # == OAuth Authentication ==
 #
@@ -15,7 +17,6 @@ execfile("twitter.conf", config)
 api_key = config["api_key"]
 api_secret_key = config["api_secret_key"]
 
-#
 # The access tokens can be found on your applications's Details
 # page located at https://dev.twitter.com/apps (located under "Your access token")
 access_token = config["access_token"]
@@ -58,266 +59,93 @@ def get_api_method_limit(api_limit, method_name):
 
         return None
 
-#User Object
-#get user object
-def get_user(twitter_handle):
-    #attributes = [attr for attr in dir(user) if not callable(getattr(user, method))]
-    #print attributes
-    user = api.get_user(twitter_handle)
-    #methods = [method for method in dir(user) if callable(getattr(user, method))]
-    return user
-
-#get twitter account creation time
-def get_user_created_at(user):
-    return user.created_at.strftime('%a %Y-%m-%d %H:%M:%S')
-
-#default profile
-def is_user_default_profile(user):
-    if not user.default_profile:
-        return False
-    return True
-
-#default profile img
-def is_user_default_profile_img(user):
-    if not user.default_profile_image:
-        return False
-    return True
-
-#get description
-def get_user_description(user):
-    return user.description
-
-#get fav count
-def get_user_fav_cnt(user):
-    return user.favourites_count
-
-#get followers list
-def get_user_followers(user):
-    return user.followers()
-
-#get friends
-def get_user_friends(user):
-    return user.friends()
-
-#get follower ids
-def get_user_follower_ids(user):
-    return user.followers_ids()
-
-#get no of followers
-def get_user_followers_count(user):
-    return user.followers_count
-
-def get_user_friends_count(user):
-    return user.friends_count
-
-#get name
-def get_user_name(user):
-    return user.name
-
-#get location
-def get_user_location(user):
-    return user.location
-
-#get screen name
-def get_user_screen_name(user):
-    return user.screen_name
-
-#get utc offset
-def get_user_utc_offset(user):
-    return user.utc_offset
-
-#get time zone
-def get_user_time_zone(user):
-    return user.time_zone
-
-#get geo enabled
-def get_user_geo_enabled(user):
-    return user.geo_enabled
-
-#get user id
-def get_user_id_string(user):
-    return user.id_str
-
-#get user language
-def get_user_language(user):
-    return user.lang
-
-#get user protected
-def get_user_protected(user):
-    return user.protected
-
-#get user statuses or tweets count
-def get_user_statuses_count(user):
-    return user.statuses_count
-
-#get user url
-def get_user_url(user):
-    return user.url
-
-#is user verified
-def is_user_verified(user):
-    return user.verified
-    
-#get profile bg img url
-def get_user_prof_bg_img_url(user):
-    return user.profile_background_image_url
-
-#get profile banner url (this attribute might not appear on some accounts, 
-#and an exception will be thrown)
-def get_user_prof_banner_url(user):
-    return user.profile_banner_url
-
-#is user using prof bg img
-def is_user_prof_bg_img(user):
-    return user.profile_use_background_image
-
-#Tweet Object
-#get timeline: user tweets
-def get_timeline(twitter_handle, numOfTweet):
-    statuses = api.user_timeline(screen_name = twitter_handle, count = numOfTweet)
-    return statuses
-
-#get author, which is an object of user
-def get_status_author(status):
-    return status.author.screen_name
-
-#get author id string
-def get_status_author_id_string(status):
-    return status.author.id_str
-
-#get tweet created timestamp
-def get_status_created_at(status):
-    return status.created_at.strftime('%a %Y-%m-%d %H:%M:%S')
-
-#get tweet favourite count
-def get_status_favorite_count(status):
-    return status.favorite_count
-
-#get tweet coordinates
-def get_status_coordinates(status):
-    return status.coordinates
-
-#get tweet id
-def get_status_id_string(status):
-    return status.id_str
-
-#get tweet language
-def get_status_language(status):
-    return status.lang
-
-#get retweet count
-def get_status_retweet_count(status):
-    return status.retweet_count
-
-#get tweet source
-def get_status_source(status):
-    return status.source
-
-#get tweet source url
-def get_status_source_url(status):
-    return status.source_url
-
-#get tweet text
-def get_status_text(status):
-    return status.text
-
-#get geo info
-def get_status_geo(status):
-    return status.geo
-
-#check if there is a unidirectional or bi-directional link betweet two twitter users
-def check_link(src_name, tgt_name):
-    source, target = api.show_friendship(source_screen_name = src_name, target_screen_name = tgt_name)
-    if source.followed_by:
-        print "%s followed by %s" % (source.screen_name, target.screen_name)
-    if source.following:
-        print "%s following %s" % (source.screen_name, target.screen_name)
-    if target.followed_by:
-        print "%s followed by %s" % (target.screen_name, source.screen_name)
-    if target.following:
-        print "%s following %s" % (target.screen_name, source.screen_name)
-    
-#get user profile
-def get_user_profile(twitter_handle):
-    user = get_user(twitter_handle)
-    profile = {}
-    profile["created_at"] = str(get_user_created_at(user))
-    profile["followers_count"] = get_user_followers_count(user)
-    profile["followees_count"] = get_user_friends_count(user)
-    if is_user_default_profile(user):
-        profile["default_profile"] = True
-    else:
-        profile["default_profile"] = False
-    if is_user_default_profile_img(user):
-        profile["default_profile_img"] = True
-    else:
-        profile["default_profile_img"] = False
-    profile["description"] = get_user_description(user).encode('utf-8')
-    profile["name"] = get_user_name(user).encode('utf-8')
-    profile["location"] = get_user_location(user).encode('utf-8')
-    profile["screen_name"] = get_user_screen_name(user).encode('utf-8')
-    profile["fave_count"] = get_user_fav_cnt(user)
-    profile["time_zone"] = get_user_time_zone(user)
-    profile["utc_offset"] = str(get_user_utc_offset(user))
-    profile["user_id"] = get_user_id_string(user)
-    profile["acc_protected"] = get_user_protected(user)
-    profile["status_count"] = get_user_statuses_count(user)
-    return profile
-
-#print user profile
-def print_user_profile(profile):
-    print "twitter handle=%s" % profile["screen_name"]
-    print "account created at=%s" % profile["created_at"]
-    print "followers count=%d" % profile["followers_count"]
-    print "followees count=%d" % profile["followees_count"]
-    print "default profile=%d" % profile["default_profile"]
-    print "default profile img=%d" % profile["default_profile_img"]
-    print "description: %s" % profile["description"]
-    print "name: %s" % profile["name"] 
-    print "location: %s" % profile["location"]
-    print "screen name: %s" % profile["screen_name"]
-    print "fav count: %d" % profile["fave_count"]
-    print "time zone: %s" % profile["time_zone"]
-    print "UTC offset: %s" % profile["utc_offset"]
-    print "user id=%s" % profile["user_id"]
-    print "acc is protected=%d" % profile["acc_protected"]
-    print "status count=%d" % profile["status_count"]
-
-#get user tweets
-def get_user_tweets(twitter_handle, tw_cnt):
-    tweets = []
-    statuses = get_timeline(twitter_handle, tw_cnt)
-    for status in statuses:
-        tweet = {}
-        tweet["source"] = get_status_source(status)
-        tweet["text"] = get_status_text(status)
-        tweet["created_at"] = str(get_status_created_at(status))
-        tweet["author"] = get_status_author(status)
-        tweet["coordinate"] = get_status_coordinates(status)
-        tweet["geo"] = get_status_geo(status)
-        tweet["lang"] = get_status_language(status)
-        tweet["fav_cnt"] = get_status_favorite_count(status)
-        tweet["rt_cnt"] = get_status_retweet_count(status)
-        tweets.append(tweet)
-    return tweets
-
 #store tweets info in a csv file
-def write_user_tweets(tweets):
-    fp = open("tweets.csv", "w")
-    with open("tweets.csv", "w") as fp:
-        fp.write("author;@;created_at;@;text;@;source;@;coord;@;geo;@;lang;@;fav_cnt;@;rt_cnt\n")
-        for tweet in tweets:
-            out = "%s;@;%s;@;%s;@;%s;@;%s;@;%s;@;%s;@;%d;@;%d\n" % (tweet["author"].encode('utf-8'), tweet["created_at"], tweet["text"].encode('utf-8'), tweet["source"].encode('utf-8'), tweet["coordinate"], tweet["geo"], tweet["lang"].encode('utf-8'), tweet["fav_cnt"], tweet["rt_cnt"])
-            fp.write(out)
+def download_and_save_tweets(tw_handle, download_path):
+    with open(download_path + "/" + tw_handle + "/tweets.csv", "w") as fp:
+
+        fp.write("\"user.created_at\";\"user.name\";\"user.screen_name\";\"user.id_str\";\"user.followers_count\";\"user.friends_count\";\"user.statuses_count\";\"user.description\";\"user.default_profile_image\";\"user.verified\";\"user.listed_count\";\"user.location\";\"user.favourites_count\";\"user.url\";\"user.protected\";\"user.default_profile\";\"user.profile_banner_url\";")
+        fp.write("\"truncated\";\"text\";\"is_quote_status\";\"quote_count\";\"favorite_count\";\"source\";\"retweeted\";\"in_reply_to_screen_name\";\"retweet_count\";\"id_str\";\"favorited\";\"in_reply_to_user_id_str\";\"lang\";\"created_at\";\"in_reply_to_status_id_str\";\"quoted_status_id_str\";\"reply_count\";\"retweet_count\";\"favorite_count\";")
+        fp.write("\"place.id\";\"place.url\";\"place.place_type\";\"place.name\";\"place.full_name\";\"place.country_code\";\"place.country\";")
+        fp.write("\"geo.lon\";\"geo.lat\";")
+        fp.write("\"media[0].expanded_url\";\"media[0].display_url\";\"media[0].url\";\"media[0].media_url_https\";\"media[0].id_str\";\"media[0].type\";\"media[0].media_url\";\"media[1].expanded_url\";\"media[1].display_url\";\"media[1].url\";\"media[1].media_url_https\";\"media[1].id_str\";\"media[1].type\";\"media[1].media_url\";\"media[2].expanded_url\";\"media[2].display_url\";\"media[2].url\";\"media[2].media_url_https\";\"media[2].id_str\";\"media[2].type\";\"media[2].media_url\";\"media[3].expanded_url\";\"media[3].display_url\";\"media[3].url\";\"media[3].media_url_https\";\"media[3].id_str\";\"media[3].type\";\"media[3].media_url\";")
+        fp.write("\"retweet_id\";\"quote_id\"\n")
+
+        for tweet in tweepy.Cursor(api.user_timeline,id=tw_handle).items():
+            json_tweet = tweet._json
+            while json_tweet: 
+                # User information
+                description = "" if json_tweet.get("user").get("description", "") is None else json_tweet.get("user").get("description", "").encode('utf-8') 
+                out = "\"" + json_tweet.get("user").get("created_at", "").encode('utf-8') + "\";\"" + json_tweet.get("user").get("name", "").encode('utf-8') + "\";\"" + json_tweet.get("user").get("screen_name", "").encode('utf-8') + "\";\"" + json_tweet.get("user").get("id_str", "").encode('utf-8') + "\";\"" + str(json_tweet.get("user").get("followers_count", "")) + "\";\"" + str(json_tweet.get("user").get("friends_count", "")) + "\";\"" + str(json_tweet.get("user").get("statuses_count", "")) + "\";\"" + description + "\";\"" + str(json_tweet.get("user").get("default_profile_image", "")) + "\";\"" + str(json_tweet.get("user").get("verified", "")) + "\";\"" + str(json_tweet.get("user").get("listed_count", "")) + "\";\"" + str(json_tweet.get("user").get("location", "")) + "\";\"" + str(json_tweet.get("user").get("favourites_count", "")) + "\";\"" + str(json_tweet.get("user").get("url", "")) + "\";\"" + str(json_tweet.get("user").get("protected", "")) + "\";\"" + str(json_tweet.get("user").get("default_profile", "")) + "\";\"" + json_tweet.get("user").get("profile_banner_url", "").encode('utf-8') + "\""
+
+                # Tweet details
+                out = out + ";\"" + str(json_tweet.get("truncated", "")) + "\";\"" + json_tweet.get("text","").encode('utf-8') + "\";\"" + str(json_tweet.get("is_quote_status","")) + "\";\"" + str(json_tweet.get("quote_count","")) + "\";\"" + str(json_tweet.get("favorite_count","")) + "\";\"" + json_tweet.get("source","").encode('utf-8') + "\";\"" + str(json_tweet.get("retweeted","")) + "\";\"" + str(json_tweet.get("in_reply_to_screen_name","")) + "\";\"" + str(json_tweet.get("retweet_count","")) + "\";\"" + json_tweet.get("id_str","").encode('utf-8') + "\";\"" + str(json_tweet.get("favorited","")) + "\";\"" + str(json_tweet.get("in_reply_to_user_id_str","")) + "\";\"" + str(json_tweet.get("lang","")) + "\";\"" + json_tweet.get("created_at","").encode('utf-8') + "\";\"" + str(json_tweet.get("in_reply_to_status_id_str","")) + "\";\"" + str(json_tweet.get("quoted_status_id_str","")) + "\";\"" + str(json_tweet.get("reply_count","")) + "\";\"" + str(json_tweet.get("retweet_count","")) + "\";\"" + str(json_tweet.get("favorite_count","")) + "\""
+
+                # Place details
+                if json_tweet.get("place") is not None:
+                    out = out + ";\"" + json_tweet.get("place").get("id", "").encode('utf-8') + "\";\"" + json_tweet.get("place").get("url", "").encode('utf-8') + "\";\"" + json_tweet.get("place").get("place_type", "").encode('utf-8') + "\";\"" + json_tweet.get("place").get("name", "").encode('utf-8') + "\";\"" + json_tweet.get("place").get("full_name", "").encode('utf-8') + "\";\"" + json_tweet.get("place").get("country_code", "").encode('utf-8') + "\";\"" + json_tweet.get("place").get("country", "").encode('utf-8') + "\"" 
+                else:
+                    out = out + ";\"\";\"\";\"\";\"\";\"\";\"\";\"\""
+
+                # Geo details
+                if json_tweet.get("coordinates") is not None:
+                    out = out + ";\"" + str(json_tweet.get("coordinates", {}).get("coordinates", [0, 0])[0]) + "\";\"" + str(json_tweet.get("coordinates", {}).get("coordinates", [0, 0])[1]) + "\""
+                else:
+                    out = out + ";\"\";\"\""
+
+                # Media attached
+                media_cnt = 0 
+                try:
+                    for media in json_tweet["extended_entities"]["media"]:
+                        out = out + ";\"" + media.get("expanded_url", "").encode('utf-8') + "\";\"" + media.get("display_url", "").encode('utf-8') + "\";\"" + media.get("url", "").encode('utf-8') + "\";\"" + media.get("media_url_https", "").encode('utf-8') + "\";\"" + media.get("id_str", "").encode('utf-8') + "\";\"" + media.get("type", "").encode('utf-8') + "\";\"" + media.get("media_url", "").encode('utf-8') + "\""
+                        download_media(media.get("media_url_https"), json_tweet["id_str"], media_cnt, download_path, tw_handle)
+                        media_cnt += 1
+                except KeyError:
+                    pass
+                while media_cnt < 4:
+                    out = out + ";\"\";\"\";\"\";\"\";\"\";\"\";\"\""
+                    media_cnt += 1
+
+                # The current tweet may be a retweet or contain another tweet nested in it, and it will be saved. 
+                try:
+                    json_tweet = json_tweet["retweeted_status"]
+                    out = out + ";\"" + str(json_tweet["id_str"]) + "\""
+                except KeyError:
+                    json_tweet = None
+                    out = out + ";\"\"" 
+
+                # ... or may be a quote for a tweet:
+                try:
+                    json_tweet = json_tweet["quoted_status"]
+                    out = out + ";\"\"" + str(json_tweet["id_str"]) + "\""
+                except KeyError:
+                    json_tweet = None
+                    out = out + ";\"\""
+                except TypeError:
+                    # This happened because the parent tweet contained a retweet
+                    pass
+
+                # Getting rid of all newlines
+                out = out.replace("\n", "")
+                fp.write(out+"\n")
+
+def download_media(url, tweet_id, media_cnt, download_path, tw_handle):
+    extension = url.split('.')[-1]
+    filename = download_path + "/" + tw_handle + "/media/" + tweet_id + "-media-" + str(media_cnt) + "." + extension
+    wget.download(url, filename)
+
+def check_path_and_create(tw_handle, download_path):
+    filename = download_path + "/" + tw_handle + "/"
+    if not os.path.exists(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename))
+    filename = filename + "media/"
+    if not os.path.exists(os.path.dirname(filename)):
+        os.makedirs(os.path.dirname(filename))
 
 if __name__ == "__main__":
-    if len(sys.argv) < 1:
-        print 'Usage: ' + sys.argv[0]
+    if len(sys.argv) < 3:
+        print 'Usage: ' + sys.argv[0] + ' twitter_user_handle download_path'
         sys.exit(1)
-    #let's get my handle profile and tweets data using tw api
-    tw_handle = "kjahanbakhsh"
-    #profile = get_user_profile(tw_handle)
-    #print_user_profile(profile)
-    tw_cnt = 580
-    tweets = get_user_tweets(tw_handle, tw_cnt)
-    write_user_tweets(tweets)
+    tw_handle = sys.argv[1]
+    download_path = sys.argv[2]
+    check_path_and_create(tw_handle, download_path)
+    download_and_save_tweets(tw_handle, download_path)
