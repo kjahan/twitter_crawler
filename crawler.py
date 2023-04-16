@@ -311,8 +311,9 @@ def get_user_tweets(twitter_handle, tw_cnt):
     return tweets
 
 #store tweets info in a csv file
-def write_user_tweets(tweets):
-    with open("data/tweets.csv", "w") as fp:
+def write_user_tweets(tweets, fn="tweets.csv"):
+    tw_fn = "data/" + fn
+    with open(tw_fn, "wb") as fp:
         fp.write("author;@;created_at;@;text;@;source;@;coord;@;geo;@;lang;@;fav_cnt;@;rt_cnt\n")
         for tweet in tweets:
             out = "%s;@;%s;@;%s;@;%s;@;%s;@;%s;@;%s;@;%d;@;%d\n" % (tweet["author"].encode('utf-8'), tweet["created_at"], tweet["text"].encode('utf-8'), tweet["source"].encode('utf-8'), tweet["coordinate"], tweet["geo"], tweet["lang"].encode('utf-8'), tweet["fav_cnt"], tweet["rt_cnt"])
@@ -329,4 +330,4 @@ if __name__ == "__main__":
     #print_user_profile(profile)
     tw_cnt = 500
     tweets = get_user_tweets(tw_handle, tw_cnt)
-    write_user_tweets(tweets)
+    write_user_tweets(tweets, 'sama_tweets_2.csv')
