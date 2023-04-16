@@ -312,8 +312,7 @@ def get_user_tweets(twitter_handle, tw_cnt):
 
 #store tweets info in a csv file
 def write_user_tweets(tweets):
-    fp = open("tweets.csv", "w")
-    with open("tweets.csv", "w") as fp:
+    with open("data/tweets.csv", "w") as fp:
         fp.write("author;@;created_at;@;text;@;source;@;coord;@;geo;@;lang;@;fav_cnt;@;rt_cnt\n")
         for tweet in tweets:
             out = "%s;@;%s;@;%s;@;%s;@;%s;@;%s;@;%s;@;%d;@;%d\n" % (tweet["author"].encode('utf-8'), tweet["created_at"], tweet["text"].encode('utf-8'), tweet["source"].encode('utf-8'), tweet["coordinate"], tweet["geo"], tweet["lang"].encode('utf-8'), tweet["fav_cnt"], tweet["rt_cnt"])
