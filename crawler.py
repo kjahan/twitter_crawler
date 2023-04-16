@@ -10,12 +10,16 @@ import sys
 # The consumer keys can be found on your application's Details
 # page located at https://dev.twitter.com/apps (under "OAuth settings")
 config = {}
-execfile("twitter.conf", config)
+# execfile("twitter.conf", config)
+config_filename = "twitter.conf"
+with open(config_filename, "rb") as fp:
+    code = compile(fp.read(), config_filename, "exec")
+exec(code, config)
+
 
 api_key = config["api_key"]
 api_secret_key = config["api_secret_key"]
 
-#
 # The access tokens can be found on your applications's Details
 # page located at https://dev.twitter.com/apps (located under "Your access token")
 access_token = config["access_token"]
@@ -43,17 +47,17 @@ def get_api_method_limit(api_limit, method_name):
         try:
             user = resources['users'][method_name]
             return user['remaining']
-        except KeyError, e:
+        except KeyError:
             pass
         try:
             status = resources['statuses'][method_name]
             return status['remaining']
-        except KeyError, e:
+        except KeyError:
             pass
         try:
             application = resources['application'][method_name]
             return application['remaining']
-        except KeyError, e:
+        except KeyError:
             pass
 
         return None
@@ -173,8 +177,9 @@ def is_user_prof_bg_img(user):
 
 #Tweet Object
 #get timeline: user tweets
-def get_timeline(twitter_handle, numOfTweet):
-    statuses = api.user_timeline(screen_name = twitter_handle, count = numOfTweet)
+# By default exclude retweets: https://stackoverflow.com/questions/50052330/tweepy-check-if-a-tweet-is-a-retweet#:~:text=Whilst%20you%20can%20exclude%20retweets,tweet%20begins%20with%20the%20rt.
+def get_timeline(twitter_handle, numOfTweet, includeRTs=False):
+    statuses = api.user_timeline(screen_name = twitter_handle, count = numOfTweet, include_rts = includeRTs)
     return statuses
 
 #get author, which is an object of user
@@ -225,17 +230,19 @@ def get_status_text(status):
 def get_status_geo(status):
     return status.geo
 
+
 #check if there is a unidirectional or bi-directional link betweet two twitter users
 def check_link(src_name, tgt_name):
     source, target = api.show_friendship(source_screen_name = src_name, target_screen_name = tgt_name)
     if source.followed_by:
-        print "%s followed by %s" % (source.screen_name, target.screen_name)
+        print("{} followed by {}".format(source.screen_name, target.screen_name))
     if source.following:
-        print "%s following %s" % (source.screen_name, target.screen_name)
+        print("{} following {}".format(source.screen_name, target.screen_name))
     if target.followed_by:
-        print "%s followed by %s" % (target.screen_name, source.screen_name)
+        print("{} followed by {}".format(target.screen_name, source.screen_name))
     if target.following:
-        print "%s following %s" % (target.screen_name, source.screen_name)
+        print("{} following {}".format(target.screen_name, source.screen_name))
+
     
 #get user profile
 def get_user_profile(twitter_handle):
@@ -266,28 +273,30 @@ def get_user_profile(twitter_handle):
 
 #print user profile
 def print_user_profile(profile):
-    print "twitter handle=%s" % profile["screen_name"]
-    print "account created at=%s" % profile["created_at"]
-    print "followers count=%d" % profile["followers_count"]
-    print "followees count=%d" % profile["followees_count"]
-    print "default profile=%d" % profile["default_profile"]
-    print "default profile img=%d" % profile["default_profile_img"]
-    print "description: %s" % profile["description"]
-    print "name: %s" % profile["name"] 
-    print "location: %s" % profile["location"]
-    print "screen name: %s" % profile["screen_name"]
-    print "fav count: %d" % profile["fave_count"]
-    print "time zone: %s" % profile["time_zone"]
-    print "UTC offset: %s" % profile["utc_offset"]
-    print "user id=%s" % profile["user_id"]
-    print "acc is protected=%d" % profile["acc_protected"]
-    print "status count=%d" % profile["status_count"]
+    print("twitter handle={}".format(profile["screen_name"]))
+    print("account created at={}".format(profile["created_at"]))
+    print("followers count={}".format(profile["followers_count"]))
+    print("followees count={}".format(profile["followees_count"]))
+    print("default profile={}".format(profile["default_profile"]))
+    print("default profile img={}".format(profile["default_profile_img"]))
+    print("description={}".format(profile["description"]))
+    print("name={}".format(profile["name"]))
+    print("location={}".format(profile["location"]))
+    print("screen name={}".format(profile["screen_name"]))
+    print("fav count={}".format(profile["fave_count"]))
+    print("time zone={}".format(profile["time_zone"]))
+    print("UTC offset={}".format(profile["utc_offset"]))
+    print("user id={}".format(profile["user_id"]))
+    print("acc is protected={}".format(profile["acc_protected"]))
+    print("status count={}".format(profile["status_count"]))
+
 
 #get user tweets
 def get_user_tweets(twitter_handle, tw_cnt):
     tweets = []
     statuses = get_timeline(twitter_handle, tw_cnt)
     for status in statuses:
+        # print("status:{}".format(status))
         tweet = {}
         tweet["source"] = get_status_source(status)
         tweet["text"] = get_status_text(status)
@@ -312,12 +321,13 @@ def write_user_tweets(tweets):
 
 if __name__ == "__main__":
     if len(sys.argv) < 1:
-        print 'Usage: ' + sys.argv[0]
+        print("Usage: {}".format(sys.argv[0]))
         sys.exit(1)
     #let's get my handle profile and tweets data using tw api
-    tw_handle = "kjahanbakhsh"
+    # tw_handle = "kjahanbakhsh"
+    tw_handle = "sama"
     #profile = get_user_profile(tw_handle)
     #print_user_profile(profile)
-    tw_cnt = 580
+    tw_cnt = 500
     tweets = get_user_tweets(tw_handle, tw_cnt)
     write_user_tweets(tweets)
